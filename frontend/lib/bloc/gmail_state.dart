@@ -1,3 +1,4 @@
+import 'package:atom_mail_hf/models/email_data.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class GmailState extends Equatable {
@@ -18,7 +19,7 @@ class GmailSignedIn extends GmailState {
 }
 
 class GmailEmailsFetched extends GmailState {
-  final List<String> emails;
+  final List<EmailData> emails;
   GmailEmailsFetched(this.emails);
 
   @override
