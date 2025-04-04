@@ -7,7 +7,7 @@ import 'gmail_event.dart';
 import 'gmail_state.dart';
 
 class GmailBloc extends Bloc<GmailEvent, GmailState> {
-    final GoogleSignIn googleSignIn = GoogleSignIn(
+  final GoogleSignIn googleSignIn = GoogleSignIn(
     scopes: ['https://www.googleapis.com/auth/gmail.readonly'],
   );
 
@@ -18,19 +18,19 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
     on<CheckLoginEvent>(_checkLogin);
   }
 
-    Future<void> _checkLogin(CheckLoginEvent event, Emitter<GmailState> emit) async {
-      emit(GmailLoading()); // Optional: Show loading
-      try {
-        final user = await googleSignIn.signInSilently();
-        if (user != null) {
-          emit(GmailSignedIn(user.email));
-        } else {
-          emit(GmailInitial());
-        }
-      } catch (e) {
-        emit(GmailError("Failed to check login: $e"));
+  Future<void> _checkLogin(CheckLoginEvent event, Emitter<GmailState> emit) async {
+    emit(GmailLoading()); // Optional: Show loading
+    try {
+      final user = await googleSignIn.signInSilently();
+      if (user != null) {
+        emit(GmailSignedIn(user.email));
+      } else {
+        emit(GmailInitial());
       }
+    } catch (e) {
+      emit(GmailError("Failed to check login: $e"));
     }
+  }
 
   Future<void> _signIn(SignInEvent event, Emitter<GmailState> emit) async {
     emit(GmailLoading());
