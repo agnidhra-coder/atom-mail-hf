@@ -10,3 +10,5 @@ class SignInEvent extends GmailEvent {}
 class FetchEmailsEvent extends GmailEvent {}
 
 class SignOutEvent extends GmailEvent {}
+
+class CheckLoginEvent extends GmailEvent {}
