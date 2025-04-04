@@ -1,5 +1,5 @@
 import 'package:atom_mail_hf/bloc/gmail_bloc.dart';
-import 'package:atom_mail_hf/home.dart';
+import 'package:atom_mail_hf/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(create: (context) => GmailBloc(),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: Home(),
+          home: SignIn(),
         ),);
   }
 
