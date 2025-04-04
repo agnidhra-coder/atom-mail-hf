@@ -1,10 +1,11 @@
-import 'package:atom_mail_hf/bloc/gmail_bloc.dart';
-import 'package:atom_mail_hf/bloc/gmail_event.dart';
-import 'package:atom_mail_hf/bloc/gmail_state.dart';
+import 'package:atom_mail_hf/bloc/bloc_gmail/gmail_bloc.dart';
 import 'package:atom_mail_hf/ui/pages/form.dart';
 import 'package:atom_mail_hf/ui/pages/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'bloc/bloc_gmail/gmail_event.dart';
+import 'bloc/bloc_gmail/gmail_state.dart';
 
 void main() {
   runApp(const MyApp());

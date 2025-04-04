@@ -1,9 +1,9 @@
+import 'package:atom_mail_hf/models/email_data.dart';
 import 'package:bloc/bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/gmail/v1.dart' as gmail;
 import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:http/http.dart' as http;
-import '../models/email_data.dart';
 import 'gmail_event.dart';
 import 'gmail_state.dart';
 
