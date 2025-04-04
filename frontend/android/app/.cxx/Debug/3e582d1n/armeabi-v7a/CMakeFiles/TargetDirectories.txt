@@ -1,0 +1,2 @@
+/home/aryan/StudioProjects/Atom_Mail/frontend/android/app/.cxx/Debug/3e582d1n/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/aryan/StudioProjects/Atom_Mail/frontend/android/app/.cxx/Debug/3e582d1n/armeabi-v7a/CMakeFiles/rebuild_cache.dir
