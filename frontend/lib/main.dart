@@ -1,5 +1,7 @@
 import 'package:atom_mail_hf/bloc/gmail_bloc.dart';
-import 'package:atom_mail_hf/home.dart';
+import 'package:atom_mail_hf/bloc/gmail_event.dart';
+import 'package:atom_mail_hf/bloc/gmail_state.dart';
+import 'package:atom_mail_hf/SignIn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,15 +11,34 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => GmailBloc(),
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: Home(),
-        ),);
+    return BlocProvider(
+      create: (context) => GmailBloc()..add(CheckLoginEvent()),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: AppEntryPoint(),
+      ),
+    );
   }
+}
 
-  
+class AppEntryPoint extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<GmailBloc, GmailState>(
+      builder: (context, state) {
+        if (state is GmailLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (state is GmailSignedIn) {
+          return Scaffold();
+        } else {
+          return SignIn(); // 🔐 show SignIn screen
+        }
+      },
+    );
+  }
 }

@@ -15,9 +15,23 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
     on<SignInEvent>(_signIn);
     on<FetchEmailsEvent>(_fetchEmails);
     on<SignOutEvent>(_signOut);
+    on<CheckLoginEvent>(_checkLogin);
   }
 
-  // 🔹 Handle Google Sign-In
+    Future<void> _checkLogin(CheckLoginEvent event, Emitter<GmailState> emit) async {
+      emit(GmailLoading()); // Optional: Show loading
+      try {
+        final user = await googleSignIn.signInSilently();
+        if (user != null) {
+          emit(GmailSignedIn(user.email));
+        } else {
+          emit(GmailInitial());
+        }
+      } catch (e) {
+        emit(GmailError("Failed to check login: $e"));
+      }
+    }
+
   Future<void> _signIn(SignInEvent event, Emitter<GmailState> emit) async {
     emit(GmailLoading());
     try {
@@ -32,7 +46,6 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
     }
   }
 
-  // 🔹 Fetch Emails from Gmail API
   Future<void> _fetchEmails(FetchEmailsEvent event, Emitter<GmailState> emit) async {
     emit(GmailLoading());
     try {
@@ -71,7 +84,6 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
     }
   }
 
-  // 🔹 Sign Out User
   Future<void> _signOut(SignOutEvent event, Emitter<GmailState> emit) async {
     try {
       await googleSignIn.signOut();
