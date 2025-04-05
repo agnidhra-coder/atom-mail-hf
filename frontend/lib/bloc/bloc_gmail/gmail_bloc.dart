@@ -24,7 +24,7 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
     try {
       final user = await googleSignIn.signInSilently();
       if (user != null) {
-        emit(GmailSignedIn(user.email));
+        emit(GmailSignedIn(user));
       } else {
         emit(GmailInitial());
       }
@@ -41,7 +41,7 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
         emit(GmailError("Sign-in aborted."));
         return;
       }
-      emit(GmailSignedIn(user.email));
+      emit(GmailSignedIn(user));
     } catch (e) {
       emit(GmailError("Sign-in failed: $e"));
     }
