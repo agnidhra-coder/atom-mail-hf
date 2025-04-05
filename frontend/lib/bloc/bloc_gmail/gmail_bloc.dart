@@ -69,7 +69,7 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
       final gmailApi = gmail.GmailApi(authClient);
       final messagesResponse = await gmailApi.users.messages.list(
         'me',
-        maxResults: 100,
+        maxResults: 20,
         q: "-category:promotions -category:spam",
       );
 
@@ -93,13 +93,13 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
         } catch (_) {}
 
         emails.add(EmailData(
-          to,
+          to ?? '',
           replyTo,
           id: msg.id ?? '',
           threadId: msg.threadId ?? '',
           snippet: msg.snippet ?? '',
           subject: subject,
-          from: from,
+          from: from ?? '',
           date: date,
         ));
       }

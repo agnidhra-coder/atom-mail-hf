@@ -1,15 +1,29 @@
+import 'package:atom_mail_hf/models/email_data.dart';
+import 'package:atom_mail_hf/ui/pages/compose.dart';
+import 'package:atom_mail_hf/ui/pages/summerize.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final List<EmailData> emails;
+
+  const HomePage({super.key, required this.emails});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+
+  late final List<EmailData> emails;
+  String name = '';
+  String emailID = '';
+  @override
+  void initState() {
+    super.initState();
+    emails = widget.emails;
+  }
   final List<String> tags = ['All', 'Work', 'Personal', 'Important', 'Starred'];
-  final List<String> emails = List.generate(10, (index) => 'Email Subject ${index + 1}');
   int selectedIndex = 0;
 
   @override
@@ -65,15 +79,36 @@ class _HomePageState extends State<HomePage> {
               itemCount: emails.length,
               padding: EdgeInsets.all(12),
               itemBuilder: (context, index) {
+                String rawEmail = emails[index].from;
+
+                RegExp exp = RegExp(r'^(.*)<(.*)>$');
+                Match? match = exp.firstMatch(rawEmail);
+                if (match != null) {
+                  name = match.group(1)!.trim();
+                  emailID = match.group(2)!.trim();
+                } else {
+                  print("Invalid format");
+                }
                 return Card(
                   elevation: 3,
                   margin: EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: Text(emails[index]),
-                    subtitle: Text("This is a short snippet of the email..."),
+                    title: Text(emails[index].subject ?? 'Unknown'),
+                    titleAlignment: ListTileTitleAlignment.center,
+                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    subtitle: Align(alignment: Alignment.bottomLeft, child: Text(name ?? 'Unknown'),),
                     trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SummarizeScreen(email: emails[index], emails: emails,),
+                        ),
+                      );
+                    },
                   ),
                 );
+
               },
             ),
           ),
@@ -83,7 +118,12 @@ class _HomePageState extends State<HomePage> {
       // FAB
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add new email or compose
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Compose(),
+            ),
+          );
         },
         backgroundColor: Colors.black,
         child: Icon(Icons.add, color: Colors.white),

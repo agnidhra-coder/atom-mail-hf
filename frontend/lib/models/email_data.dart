@@ -3,8 +3,8 @@ class EmailData {
   final String threadId;
   final String snippet;
   final String? subject;
-  final String? from;
-  final String? to;
+  final String from;
+  final String to;
   final String? replyTo;
   final DateTime? date;
 
@@ -15,7 +15,35 @@ class EmailData {
     required this.threadId,
     required this.snippet,
     this.subject,
-    this.from,
+    required this.from,
     this.date,
   });
+
+  // Convert EmailData to a Map
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'threadId': threadId,
+      'snippet': snippet,
+      'subject': subject,
+      'from': from,
+      'to': to,
+      'replyTo': replyTo,
+      'date': date?.toIso8601String(),
+    };
+  }
+
+// Create EmailData from a Map
+// factory EmailData.fromJson(Map<String, dynamic> json) {
+//   return EmailData(
+//     json['to'],
+//     json['replyTo'],
+//     id: json['id'],
+//     threadId: json['threadId'],
+//     snippet: json['snippet'],
+//     subject: json['subject'],
+//     from: json['from'],
+//     date: json['date'] != null ? DateTime.parse(json['date']) : null,
+//   );
+// }
 }

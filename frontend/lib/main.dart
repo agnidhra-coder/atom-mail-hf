@@ -32,13 +32,17 @@ class AppEntryPoint extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<GmailBloc, GmailState>(
       builder: (context, state) {
+        print(state);
         if (state is GmailLoading) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(child: CircularProgressIndicator(color: Colors.black,)),
           );
-        } else if (state is GmailSignedIn) {
-          return HomePage(); // home
-        } else {
+        } else if (state is GmailEmailsFetched) {
+          return HomePage(emails: state.emails,); // home
+        }else if(state is GmailSignedIn){
+          return DetailsForm();
+        }
+        else {
           return SignIn();
         }
       },
