@@ -40,10 +40,7 @@ class AppEntryPoint extends StatelessWidget {
         } else if (state is GmailEmailsFetched) {
           return HomePage(emails: state.emails,); // home
         }else if(state is GmailSignedIn){
-          context.read<GmailBloc>().add(FetchEmailsEvent());
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: Colors.black)),
-          );
+          return DetailsForm();
         }
         else {
           return SignIn();

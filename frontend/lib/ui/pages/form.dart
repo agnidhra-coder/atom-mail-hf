@@ -1,8 +1,12 @@
 import 'package:atom_mail_hf/ui/utils/custom_button.dart';
 import 'package:atom_mail_hf/ui/utils/custom_input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/monitoring/v3.dart';
+
+import '../../bloc/bloc_gmail/gmail_bloc.dart';
+import '../../bloc/bloc_gmail/gmail_event.dart';
 
 class DetailsForm extends StatefulWidget {
   final String? email;
@@ -106,7 +110,9 @@ class _DetailsFormState extends State<DetailsForm> {
                   icon: null,
                 ),
               SizedBox(height: 10),
-              CustomButton(text: "Submit", onPressed: (){})
+              CustomButton(text: "Submit", onPressed: (){
+                context.read<GmailBloc>().add(FetchEmailsEvent());
+              })
             ],
           ),
         ),
