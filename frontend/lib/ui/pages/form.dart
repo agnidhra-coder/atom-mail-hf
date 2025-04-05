@@ -27,7 +27,6 @@ class _DetailsFormState extends State<DetailsForm> {
     
     _nameController.text = widget.user?.displayName ?? '';
     _emailController.text = widget.user?.email ?? '';
-    
   }
 
   final TextEditingController _nameController = TextEditingController();

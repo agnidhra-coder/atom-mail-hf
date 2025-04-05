@@ -1,8 +1,11 @@
 import 'package:atom_mail_hf/models/email_data.dart';
+import 'package:atom_mail_hf/ui/pages/home.dart';
 import 'package:atom_mail_hf/ui/utils/custom_input_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/slides/v1.dart';
+
+import '../utils/custom_button.dart';
 
 class Compose extends StatefulWidget {
   late EmailData? email;
@@ -68,7 +71,16 @@ class _ComposeState extends State<Compose> {
             ),
           ],
         ),
-      )
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: CustomButton(
+          text: 'SEND',
+          onPressed: () {
+            
+          },
+        ),
+      ),
     );
   }
 }

@@ -15,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
 
+import '../../ui/utils/getSQLData.dart';
 import '../bloc_gmail/gmail_bloc.dart';
 import '../bloc_gmail/gmail_state.dart';
 
@@ -28,7 +29,8 @@ class SqlBloc extends Bloc<SqlEvent, SqlState> {
   SqlBloc({required this.gmailBloc}) : super(SqlInitial()) {
     on<InitializeSqlEvent>(_initializeSql);
     on<SyncEmailsEvent>(_syncEmails);
-    on<QueryEmailsEvent>(_queryEmails);
+    on<FetchSQLDataEvent>(_fetchSQLData);
+    // on<QueryEmailsEvent>(_queryEmails);
   }
 
   Future<void> _initializeSql(
@@ -251,65 +253,85 @@ $body
     }
   }
 
-  Future<void> _queryEmails(
-      QueryEmailsEvent event, Emitter<SqlState> emit) async {
-    emit(SqlLoading());
+  Future<void> _fetchSQLData(
+      FetchSQLDataEvent event, Emitter<SqlState> emit) async {
+    emit(SqlLoading()); // Emit loading state
+
     try {
-      final appDir = await getApplicationDocumentsDirectory();
-      final collectionDir = Directory('${appDir.path}/gmail');
+      // Call the getSQLData function to fetch data
+      final dataList = await getSQLData();
 
-      if (!await collectionDir.exists()) {
-        emit(SqlError("No emails have been indexed yet"));
-        return;
+      // Check if data is fetched successfully
+      if (dataList.isNotEmpty) {
+        emit(SqlQueryComplete(dataList)); // Emit success state with data
+      } else {
+        emit(SqlError("No data found.")); // Emit error state if no data is found
       }
-
-      final files = await collectionDir
-          .list()
-          .where((entity) => entity is File && entity.path.endsWith('.json'))
-          .toList();
-
-      List<Map<String, dynamic>> results = [];
-
-      for (var file in files) {
-        if (file is File) {
-          final content = await file.readAsString();
-          final doc = jsonDecode(content);
-
-          results.add({
-            'id': file.path.split('/').last.replaceAll('.json', ''),
-            'content': doc['content'],
-            'metadata': doc['metadata'],
-            'embedding': await _calculateEmbedding(doc['content']),
-          });
-        }
-      }
-
-      results.sort((a, b) =>
-          (a['distance'] as double).compareTo(b['distance'] as double));
-
-      final topResults = results.take(event.limit).toList();
-
-      emit(SqlQueryComplete(topResults));
     } catch (e) {
-      print('[ERROR] Failed to query emails: $e');
-      emit(SqlError("Failed to query emails: $e"));
+      emit(SqlError("Failed to fetch data: $e")); // Emit error state on exception
     }
   }
 
-  Future<List<double>> _calculateEmbedding(String text) async {
-    try {
-      final content = Content.text(text);
-      final model = GenerativeModel(
-        model: 'models/text-embedding-004',
-        apiKey: dotenv.env['GEMINI_API_KEY']!,
-      );
-      final result = await model.embedContent(content);
-      return result.embedding.values;
-    } catch (e) {
-      print("[ERROR] Failed to generate embedding: $e");
-      return List.filled(512, 0.0);
-    }
-  }
+
+  // Future<void> _queryEmails(
+  //     QueryEmailsEvent event, Emitter<SqlState> emit) async {
+  //   emit(SqlLoading());
+  //   try {
+  //     final appDir = await getApplicationDocumentsDirectory();
+  //     final collectionDir = Directory('${appDir.path}/gmail');
+  //
+  //     if (!await collectionDir.exists()) {
+  //       emit(SqlError("No emails have been indexed yet"));
+  //       return;
+  //     }
+  //
+  //     final files = await collectionDir
+  //         .list()
+  //         .where((entity) => entity is File && entity.path.endsWith('.json'))
+  //         .toList();
+  //
+  //     List<Map<String, dynamic>> results = [];
+  //
+  //     for (var file in files) {
+  //       if (file is File) {
+  //         final content = await file.readAsString();
+  //         final doc = jsonDecode(content);
+  //
+  //         results.add({
+  //           'id': file.path.split('/').last.replaceAll('.json', ''),
+  //           'content': doc['content'],
+  //           'metadata': doc['metadata'],
+  //           'embedding': await _calculateEmbedding(doc['content']),
+  //         });
+  //       }
+  //     }
+  //
+  //     results.sort((a, b) =>
+  //         (a['distance'] as double).compareTo(b['distance'] as double));
+  //
+  //     final topResults = results.take(event.limit).toList();
+  //
+  //     emit(SqlQueryComplete(topResults));
+  //   } catch (e) {
+  //     print('[ERROR] Failed to query emails: $e');
+  //     emit(SqlError("Failed to query emails: $e"));
+  //   }
+  // }
+  //
+  // Future<List<double>> _calculateEmbedding(String text) async {
+  //   try {
+  //     final content = Content.text(text);
+  //     final model = GenerativeModel(
+  //       model: 'models/text-embedding-004',
+  //       apiKey: dotenv.env['GEMINI_API_KEY']!,
+  //     );
+  //     final result = await model.embedContent(content);
+  //     return result.embedding.values;
+  //   } catch (e) {
+  //     print("[ERROR] Failed to generate embedding: $e");
+  //     return List.filled(512, 0.0);
+  //   }
+  // }
 
   DateTime? parseEmailDate(String dateString) {
     try {

@@ -26,3 +26,9 @@ class QueryEmailsEvent extends SqlEvent {
   @override
   List get props => [queryText, limit];
 }
+
+class FetchSQLDataEvent extends SqlEvent {
+  @override
+  List<Object?> get props => [];
+}
+

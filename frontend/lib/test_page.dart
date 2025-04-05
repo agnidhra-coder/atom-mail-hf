@@ -2,6 +2,7 @@ import 'dart:math' as Math;
 import 'dart:io';
 import 'package:atom_mail_hf/bloc/bloc_sql/sql_state.dart';
 import 'package:atom_mail_hf/ui/utils/custom_button.dart';
+import 'package:atom_mail_hf/ui/utils/getSQLData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -316,9 +317,13 @@ class SqlGmailTest extends StatelessWidget {
       children: [
         Expanded(
           child: CustomButton(
-            onPressed: () {
+            onPressed: () async {
               BlocProvider.of<SqlBloc>(context)
                   .add(SyncEmailsEvent(maxResults: 20));
+
+              // List<Map<String,dynamic>> response = await getSQLData();
+              //
+              // print(response[0]['content']);
             },
             text: 'Sync Emails',
           ),

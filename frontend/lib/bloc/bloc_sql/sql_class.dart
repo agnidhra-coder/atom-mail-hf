@@ -60,7 +60,7 @@ class SqlManage {
   // }
 
   Future<void> _saveDocument(String id, String content, Map<String, dynamic> metadata, List<double> embedding) async {
-    final url = Uri.parse('https://dirty-parrots-prove.loca.lt/email/upload');
+    final url = Uri.parse('https://great-jobs-rest.loca.lt/email/upload');
 
     print(metadata.toString());
 
