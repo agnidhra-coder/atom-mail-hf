@@ -1,15 +1,25 @@
+import 'package:atom_mail_hf/models/email_data.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final List<EmailData> emails;
+
+  const HomePage({super.key, required this.emails});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+
+  late final List<EmailData> emails;
+  @override
+  void initState() {
+    super.initState();
+    emails = widget.emails;
+  }
   final List<String> tags = ['All', 'Work', 'Personal', 'Important', 'Starred'];
-  final List<String> emails = List.generate(10, (index) => 'Email Subject ${index + 1}');
   int selectedIndex = 0;
 
   @override
@@ -69,8 +79,8 @@ class _HomePageState extends State<HomePage> {
                   elevation: 3,
                   margin: EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: Text(emails[index]),
-                    subtitle: Text("This is a short snippet of the email..."),
+                    title: Text(emails[index].subject ?? 'Unknown'),
+                    subtitle: Text(emails[index].from ?? 'Unknown'),
                     trailing: Icon(Icons.arrow_forward_ios, size: 16),
                   ),
                 );
