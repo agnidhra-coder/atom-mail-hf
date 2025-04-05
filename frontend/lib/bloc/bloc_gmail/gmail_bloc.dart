@@ -13,18 +13,34 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
   );
 
   GmailBloc() : super(GmailInitial()) {
+    // on<CheckLoginEvent>(_checkLogin);
     on<SignInEvent>(_signIn);
     on<FetchEmailsEvent>(_fetchEmails);
     on<SignOutEvent>(_signOut);
     on<CheckLoginEvent>(_checkLogin);
   }
 
+  // Future<void> checkAlreadyLogin(CheckLoginEvent event, Emitter<GmailState> emit) async {
+  //   emit(GmailLoading());
+  //   try {
+  //     final user = await googleSignIn.signInSilently();
+  //     if (user != null) {
+  //       emit(GmailAlreadySignedIn(user));
+  //     } else {
+  //       emit(GmailInitial());
+  //     }
+  //   } catch (e) {
+  //     emit(GmailError("Failed to check login: $e"));
+  //   }
+  // }
+
+
   Future<void> _checkLogin(CheckLoginEvent event, Emitter<GmailState> emit) async {
     emit(GmailLoading()); // Optional: Show loading
     try {
       final user = await googleSignIn.signInSilently();
       if (user != null) {
-        emit(GmailSignedIn(user));
+        emit(GmailAlreadySignedIn(user));
       } else {
         emit(GmailInitial());
       }

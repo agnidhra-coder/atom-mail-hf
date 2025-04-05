@@ -7,6 +7,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:googleapis/gmail/v1.dart' as gmail;
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -39,7 +40,7 @@ class SqlBloc extends Bloc<SqlEvent, SqlState> {
     try {
       await dotenv.load(fileName: ".env");
 
-      print("[CHROMA] Loading environment variables...");
+      // print("[CHROMA] Loading environment variables...");
       if (dotenv.env['GEMINI_API_KEY'] == null ||
           dotenv.env['GEMINI_API_KEY']!.isEmpty) {
         emit(SqlError("Gemini API key not found in .env file"));
@@ -231,7 +232,7 @@ $body
             'to_email': to,
             // 'date': messageTime.toIso8601String(),
             'timestamp': messageTime.millisecondsSinceEpoch / 1000,
-            // 'threadId': fullMessage.threadId,
+            'thread_id': message.threadId,
           },
           // 'timestamp': messageTime.millisecondsSinceEpoch / 1000,
         });

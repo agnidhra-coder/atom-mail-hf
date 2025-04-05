@@ -24,6 +24,8 @@ class SqlManage {
     if (!await collectionDir.exists()) {
       await collectionDir.create(recursive: true);
     }
+
+    dotenv.load(fileName:'.env');
   }
 
   Future<void> addToDatabase(List<Map<String, dynamic>> emails) async {

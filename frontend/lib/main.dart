@@ -11,6 +11,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'bloc/bloc_gmail/gmail_event.dart';
 import 'bloc/bloc_gmail/gmail_state.dart';
+import 'bloc/bloc_sql/sql_state.dart';
+import 'models/email_data.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +37,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: AppEntryPoint(),
+        // home: SqlGmailTest(),
       ),
     );
   }
@@ -43,24 +46,66 @@ class MyApp extends StatelessWidget {
 class AppEntryPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GmailBloc, GmailState>(
-      builder: (context, state) {
-        print(state);
-        if (state is GmailLoading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: Colors.black)),
-          );
-        } else if (state is GmailEmailsFetched) {
-          return HomePage(emails: state.emails); // home
-        } else if (state is GmailSignedIn) {
-          context.read<SqlBloc>().add(FetchSQLDataEvent());
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: Colors.black)),
-          );
-        } else {
-          return SignIn();
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<GmailBloc, GmailState>(
+          listener: (context, state) {
+            if (state is GmailAlreadySignedIn) {
+            context.read<SqlBloc>().add(FetchSQLDataEvent());
+            }
+            else if (state is GmailSignedIn) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => DetailsForm(user: state.user)),
+              );
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder<GmailBloc, GmailState>(
+        builder: (context, gmailState) {
+          if (gmailState is GmailLoading) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator(color: Colors.black)),
+            );
+          } else if (gmailState is GmailEmailsFetched) {
+            return HomePage(emails: gmailState.emails);
+          } else if (gmailState is GmailAlreadySignedIn) {
+            return BlocBuilder<SqlBloc, SqlState>(
+              builder: (context, sqlState) {
+                if (sqlState is SqlLoading) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                } else if (sqlState is SqlQueryComplete) {
+                  List<EmailData> emails = [];
+
+                  for(var item in sqlState.results){
+
+                    final email = EmailData.fromJsonWithContent(
+                      json: item,
+                      id: "null",
+                      threadId: "null",
+                    );
+
+                    emails.add(email);
+                  }
+                  return HomePage(emails: emails);
+                } else {
+                  return const Scaffold(
+                    body: Center(child: Text("Fetching cached emails...")),
+                  );
+                }
+              },
+            );
+          } else {
+            return SignIn();
+          }
+        },
+      ),
     );
   }
 }
+
+
+

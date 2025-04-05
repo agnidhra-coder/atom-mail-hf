@@ -34,3 +34,13 @@ class GmailError extends GmailState {
   @override
   List<Object?> get props => [message];
 }
+
+class GmailAlreadySignedIn extends GmailState {
+  final GoogleSignInAccount user;
+
+  GmailAlreadySignedIn(this.user);
+
+  @override
+  List<Object?> get props => [user];
+}
+

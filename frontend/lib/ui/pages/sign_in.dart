@@ -14,6 +14,7 @@ class SignIn extends StatelessWidget {
     return Scaffold(
       body: BlocBuilder<GmailBloc, GmailState>(
         builder: (context, state) {
+          print('state is $state');
           if (state is GmailLoading) {
             return Center(
               child: CircularProgressIndicator(
@@ -21,11 +22,11 @@ class SignIn extends StatelessWidget {
               ),
             );
           }
-          if(state is GmailSignedIn){
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailsForm(user: state.user,)));
-            });
-          }
+          // if(state is GmailSignedIn){
+          //   WidgetsBinding.instance.addPostFrameCallback((_) {
+          //     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailsForm(user: state.user,)));
+          //   });
+          // }
           // if(state is GmailEmailsFetched){
           //   return Text(state.emails[0].threadId);
           // }
