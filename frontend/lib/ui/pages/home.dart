@@ -1,4 +1,5 @@
 import 'package:atom_mail_hf/models/email_data.dart';
+import 'package:atom_mail_hf/ui/pages/summerize.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -82,8 +83,17 @@ class _HomePageState extends State<HomePage> {
                     title: Text(emails[index].subject ?? 'Unknown'),
                     subtitle: Text(emails[index].from ?? 'Unknown'),
                     trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SummarizeScreen(email: emails[index], emails: emails,),
+                        ),
+                      );
+                    },
                   ),
                 );
+
               },
             ),
           ),
