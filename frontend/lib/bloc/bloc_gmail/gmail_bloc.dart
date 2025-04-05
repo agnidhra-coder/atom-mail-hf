@@ -1,3 +1,4 @@
+import 'package:atom_mail_hf/models/email_data.dart';
 import 'package:bloc/bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/gmail/v1.dart' as gmail;
@@ -23,7 +24,7 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
     try {
       final user = await googleSignIn.signInSilently();
       if (user != null) {
-        emit(GmailSignedIn(user.email));
+        emit(GmailSignedIn(user));
       } else {
         emit(GmailInitial());
       }
@@ -40,7 +41,7 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
         emit(GmailError("Sign-in aborted."));
         return;
       }
-      emit(GmailSignedIn(user.email));
+      emit(GmailSignedIn(user));
     } catch (e) {
       emit(GmailError("Sign-in failed: $e"));
     }
@@ -72,13 +73,38 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
         q: "-category:promotions -category:spam",
       );
 
-      List<String> emailSubjects = [];
+      List<EmailData> emails = [];
+
       for (var message in messagesResponse.messages ?? []) {
         final msg = await gmailApi.users.messages.get('me', message.id!);
-        emailSubjects.add(msg.snippet ?? "No subject");
+
+        final headers = msg.payload?.headers ?? [];
+
+        String? subject = headers.firstWhere((h) => h.name == "Subject", orElse: () => gmail.MessagePartHeader(name: '', value: '')).value;
+        String? from = headers.firstWhere((h) => h.name == "From", orElse: () => gmail.MessagePartHeader(name: '', value: '')).value;
+        String? to = headers.firstWhere((h) => h.name == "To", orElse: () => gmail.MessagePartHeader(name: '', value: '')).value;
+        String? replyTo = headers.firstWhere((h) => h.name == "Reply-To", orElse: () => gmail.MessagePartHeader(name: '', value: '')).value;
+        DateTime? date;
+        try {
+          final dateHeader = headers.firstWhere((h) => h.name == "Date", orElse: () => gmail.MessagePartHeader(name: '', value: '')).value;
+          if (dateHeader != null && dateHeader.isNotEmpty) {
+            date = DateTime.tryParse(dateHeader);
+          }
+        } catch (_) {}
+
+        emails.add(EmailData(
+          to,
+          replyTo,
+          id: msg.id ?? '',
+          threadId: msg.threadId ?? '',
+          snippet: msg.snippet ?? '',
+          subject: subject,
+          from: from,
+          date: date,
+        ));
       }
 
-      emit(GmailEmailsFetched(emailSubjects));
+      emit(GmailEmailsFetched(emails));
     } catch (e) {
       emit(GmailError("Failed to fetch emails: $e"));
     }

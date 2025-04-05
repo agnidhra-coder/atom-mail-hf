@@ -1,9 +1,11 @@
 import 'package:atom_mail_hf/ui/utils/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/gmail_bloc.dart';
-import '../bloc/gmail_event.dart';
-import '../bloc/gmail_state.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import '../../bloc/bloc_gmail/gmail_bloc.dart';
+import '../../bloc/bloc_gmail/gmail_event.dart';
+import '../../bloc/bloc_gmail/gmail_state.dart';
+import 'form.dart';
 
 class SignIn extends StatelessWidget {
 
@@ -19,6 +21,14 @@ class SignIn extends StatelessWidget {
               ),
             );
           }
+          if(state is GmailSignedIn){
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailsForm(user: state.user,)));
+            });
+          }
+          // if(state is GmailEmailsFetched){
+          //   return Text(state.emails[0].threadId);
+          // }
 
           return SingleChildScrollView(
             child: Column(
