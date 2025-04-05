@@ -47,6 +47,31 @@ class GmailBloc extends Bloc<GmailEvent, GmailState> {
     }
   }
 
+  Future<gmail.GmailApi?> getGmailApi() async {
+    try {
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        return null;
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final authClient = auth.authenticatedClient(
+        http.Client(),
+        auth.AccessCredentials(
+          auth.AccessToken('Bearer', googleAuth.accessToken!,
+              DateTime.now().toUtc().add(Duration(hours: 1))),
+          null,
+          ['https://www.googleapis.com/auth/gmail.readonly'],
+        ),
+      );
+
+      return gmail.GmailApi(authClient);
+    } catch (e) {
+      print("Error getting Gmail API: $e");
+      return null;
+    }
+  }
+
   Future<void> _fetchEmails(FetchEmailsEvent event, Emitter<GmailState> emit) async {
     emit(GmailLoading());
     try {
