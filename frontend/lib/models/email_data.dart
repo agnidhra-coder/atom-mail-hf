@@ -3,21 +3,21 @@ class EmailData {
   final String threadId;
   final String snippet;
   final String? subject;
-  final String? from;
-  final String? to;
+  final String from;
+  final String to;
   final String? replyTo;
   final DateTime? date;
 
   EmailData(
-      this.to,
-      this.replyTo, {
-        required this.id,
-        required this.threadId,
-        required this.snippet,
-        this.subject,
-        this.from,
-        this.date,
-      });
+    this.to,
+    this.replyTo, {
+    required this.id,
+    required this.threadId,
+    required this.snippet,
+    this.subject,
+    required this.from,
+    this.date,
+  });
 
   // Convert EmailData to a Map
   Map<String, dynamic> toJson() {
@@ -33,17 +33,17 @@ class EmailData {
     };
   }
 
-  // Create EmailData from a Map
-  // factory EmailData.fromJson(Map<String, dynamic> json) {
-  //   return EmailData(
-  //     json['to'],
-  //     json['replyTo'],
-  //     id: json['id'],
-  //     threadId: json['threadId'],
-  //     snippet: json['snippet'],
-  //     subject: json['subject'],
-  //     from: json['from'],
-  //     date: json['date'] != null ? DateTime.parse(json['date']) : null,
-  //   );
-  // }
+// Create EmailData from a Map
+// factory EmailData.fromJson(Map<String, dynamic> json) {
+//   return EmailData(
+//     json['to'],
+//     json['replyTo'],
+//     id: json['id'],
+//     threadId: json['threadId'],
+//     snippet: json['snippet'],
+//     subject: json['subject'],
+//     from: json['from'],
+//     date: json['date'] != null ? DateTime.parse(json['date']) : null,
+//   );
+// }
 }
