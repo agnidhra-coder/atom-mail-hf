@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:atom_mail_hf/ui/utils/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:atom_mail_hf/models/email_data.dart';
-import 'package:http/http.dart' as http;
 
+import '../utils/AIReplyBottomSheet.dart';
 import 'compose.dart';
 
 class SummarizeScreen extends StatefulWidget {
   final EmailData email;
   final List<EmailData> emails;
 
-  const SummarizeScreen({super.key, required this.email ,  required this.emails});
+  const SummarizeScreen({super.key, required this.email, required this.emails});
 
   @override
   State<SummarizeScreen> createState() => _SummarizeScreenState();
@@ -39,35 +39,19 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     } else {
       print("Invalid format");
     }
-
-    // sendEmailData(emails);
   }
-  //
-  // Future<void> sendEmailData(List<EmailData> emails) async {
-  //   final url = Uri.parse("https://your-api-endpoint.com/summarize");
-  //
-  //   final response = await http.post(
-  //     url,
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: jsonEncode(emails.map((e) => e.toJson()).toList()),
-  //   );
-  //
-  //   if (response.statusCode == 200) {
-  //     print("Success: ${response.body}");
-  //   } else {
-  //     print("Failed: ${response.statusCode}, ${response.body}");
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Summary'),
-        backgroundColor: Colors.transparent,
-        scrolledUnderElevation: 0.0,
+        title: Text(
+          'Summary',
+          style: TextStyle(color: Colors.grey[800]),
+        ),
+        backgroundColor: Colors.grey[50],
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.grey[800]),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -75,40 +59,101 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("${email.subject}", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+              // AI Summary Box
+              Container(
+                margin: EdgeInsets.only(bottom: 16),
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.auto_awesome, color: Colors.blue[700]),
+                        SizedBox(width: 8),
+                        Text(
+                          "AI Summary",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.blue[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "This email discusses key points related to the subject. AI-generated summaries will appear here.",
+                      style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Email Subject
+              Text(
+                "${email.subject}",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+              ),
               SizedBox(height: 15),
-              Wrap(
+
+              // From Section
+              Row(
                 children: [
-                  Text("From:  ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  Text(name , style: TextStyle(fontSize: 16)),
+                  Text("From:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+                  SizedBox(width: 4),
+                  Flexible(
+                      child: Text(name,
+                          style: TextStyle(fontSize: 16, color: Colors.grey[600]), overflow: TextOverflow.ellipsis)),
                 ],
               ),
               SizedBox(height: 8),
-              Text(emailID , style: TextStyle(fontSize: 16)),
+
+              // Email ID
+              Text(emailID, style: TextStyle(fontSize: 16, color: Colors.grey[600])),
               SizedBox(height: 15),
-              Text("Content:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+
+              // Content Section
+              Text("Content:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[800])),
               SizedBox(height: 8),
-              Text(email.snippet ?? "No content available", style: TextStyle(fontSize: 14)),
-              SizedBox(height: 20,),
-              Text("Summary:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
-              Text("YAHA HOGI SUMMARY"?? "No content available", style: TextStyle(fontSize: 14)),
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[300]!)),
+                child: Text(email.snippet ?? "No content available",
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+              ),
             ],
           ),
         ),
       ),
+
+      // Bottom Navigation Bar with AI Reply Button
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: CustomButton(
-          text: 'Reply',
+        child: ElevatedButton.icon(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Compose(email: email, isReply: true,),
-              ),
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+              builder: (context) => AIReplyBottomSheet(),
             );
           },
+          icon: Icon(Icons.auto_awesome),
+          label: Text("Reply with AI"),
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.blue[700],
+            backgroundColor: Colors.blue[100],
+            padding: EdgeInsets.symmetric(vertical: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
         ),
       ),
     );

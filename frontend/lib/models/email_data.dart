@@ -23,7 +23,7 @@ class EmailData {
     return {
       'id': id,
       'threadId': threadId,
-      'snippet': snippet,
+      'snippet': snippet.replaceAll(RegExp(r'[\n\r]+'), ' '), // Replace newline,
       'subject': subject,
       'from': from,
       'to': to,

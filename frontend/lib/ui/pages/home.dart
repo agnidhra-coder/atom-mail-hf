@@ -30,9 +30,29 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Atom Mail'),
-        scrolledUnderElevation: 0.0,
-        backgroundColor: Colors.transparent,
+        title: Text(
+          'Atom Mail',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.grey[800], // Darker title text
+          ),
+        ),
+        backgroundColor: Colors.grey[50], // Very light background
+        elevation: 0, // Remove shadow
+        actions: [
+          IconButton(
+            icon: Icon(Icons.sync, color: Colors.grey[700]), // Darker icon
+            onPressed: () {
+
+            },
+          ),
+        //   IconButton(
+        //     icon: Icon(Icons.account_circle, color: Colors.grey[700]), // Darker icon
+        //     onPressed: () {},
+        //   ),
+        ],
+        centerTitle: false,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,48 +93,72 @@ class _HomePageState extends State<HomePage> {
 
           SizedBox(height: 10),
 
-          // Emails List
-          Expanded(
-            child: ListView.builder(
-              itemCount: emails.length,
-              padding: EdgeInsets.all(12),
-              itemBuilder: (context, index) {
-                String rawEmail = emails[index].from;
+            // Emails List
+            Expanded(
+              child: ListView.builder(
+                itemCount: emails.length,
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                itemBuilder: (context, index) {
+                  String rawEmail = emails[index].from;
 
-                RegExp exp = RegExp(r'^(.*)<(.*)>$');
-                Match? match = exp.firstMatch(rawEmail);
-                if (match != null) {
-                  name = match.group(1)!.trim();
-                  emailID = match.group(2)!.trim();
-                } else {
-                  print("Invalid format");
-                }
-                return Card(
-                  elevation: 3,
-                  margin: EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    title: Text(emails[index].subject ?? 'Unknown'),
-                    titleAlignment: ListTileTitleAlignment.center,
-                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    subtitle: Align(alignment: Alignment.bottomLeft, child: Text(name ?? 'Unknown'),),
-                    trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SummarizeScreen(email: emails[index], emails: emails,),
+                  RegExp exp = RegExp(r'^(.*)<(.*)>$');
+                  Match? match = exp.firstMatch(rawEmail);
+                  if (match != null) {
+                    name = match.group(1)!.trim();
+                    emailID = match.group(2)!.trim();
+                  } else {
+                    print("Invalid format");
+                  }
+                  return Card(
+                    elevation: 0, // Remove shadow
+                    margin: EdgeInsets.symmetric(vertical: 4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(color: Colors.grey[300]!, width: 1), // Subtle border
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blue[50], // Lighter avatar color
+                        child: Text(
+                          emails[index].from[0].toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.blue[700],
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                );
-
-              },
+                      ),
+                      title: Text(
+                        emails[index].subject ?? 'No Subject',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[800], // Darker text
+                        ),
+                      ),
+                      subtitle: Text(
+                        name.isNotEmpty ? name : 'Unknown Sender',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[600]), // Darker icon
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SummarizeScreen(
+                              email: emails[index],
+                              emails: emails,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-
+          ],
+        ),
       // FAB
       floatingActionButton: FloatingActionButton(
         onPressed: () {
