@@ -104,14 +104,21 @@ Future<String> getSummary(String query) async{
   return summary;
 }
 
-Future<String> getResponse(String query, String thread_id) async{
+Future<String> getResponse(String prompt, String thread_id) async{
   print(thread_id);
-  final url = Uri.parse('https://4e6e-2409-40e4-52-ccce-448e-a831-66cf-2300.ngrok-free.app/reply?thread_id=$thread_id?query=${Uri.encodeComponent(query)}');
+  final url = Uri.parse('https://4e6e-2409-40e4-52-ccce-448e-a831-66cf-2300.ngrok-free.app/reply');
   String result = '';
 
   try {
-    final response = await http.get(
+    final response = await http.post(
       url,
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: jsonEncode({
+        "thread_id": thread_id,
+        "prompt": prompt
+      })
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
