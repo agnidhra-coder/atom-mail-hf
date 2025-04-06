@@ -23,47 +23,62 @@ class _HomePageState extends State<HomePage> {
   List<EmailData> emails = [];
   String name = '';
   String emailID = '';
-  List<String> tags = [];
-  bool isLoading = false;
+  List<dynamic>? tags;
+  bool isBlank = false;
 
   @override
   void initState() {
     super.initState();
     emails = widget.emails;
-    fetchTags();
-    // extractUniqueTags(widget.emails);
-    print("emails.length: ${emails.length}");
+    // fetchTags();
+    extractUniqueTags(widget.emails);
+    // print("emails.length: ${emails.length}");
   }
 
-  // void extractUniqueTags(List<EmailData> emailsList) {
-  //   final Set<String> tagSet = {};
-  //   for (var email in emailsList) {
-  //     tagSet.addAll(email.tags);
-  //     print(email.tags);
-  //   }
-  //
-  //   final List<String> uniqueTags = tagSet.toList()..sort();
-  //   setState(() {
-  //     tags = ['All', ...uniqueTags];
-  //   });
-  // }
-  //
-  // List<EmailData> getEmailsByTag(List<EmailData> emails, String tag) {
-  //   if (tag == 'All') return emails;
-  //
-  //   return emails.where((email) => email.tags.contains(tag)).toList();
-  // }
+  void extractUniqueTags(List<EmailData> emailsList) {
+    final tagSet = <String>{};
 
+    for (var email in emailsList) {
+        if(email.tags != null){
+          for(var it in email.tags!){
+            tagSet.add(it);
+          }
+        }
+    }
 
-  Future<void> fetchTags() async {
-    final fetchedTags = await getTags();
     setState(() {
-      tags = fetchedTags;
-      tags.insert(0, 'All');
+      tags = ['All', ...tagSet.toList()..sort()];
     });
   }
 
+  List<EmailData> getEmailsByTag(List<EmailData> emails, String tag) {
+    if (tag == 'All') return emails;
+
+    return emails.where((email) => email.tags?.contains(tag) ?? false).toList();
+  }
+
+
+
+  // Future<void> fetchTags() async {
+  //   final fetchedTags = await getTags();
+  //   setState(() {
+  //     tags = fetchedTags;
+  //     tags!.insert(0, 'All');
+  //   });
+  // }
+
   int selectedIndex = 0;
+  void _showBlankScreen() {
+    setState(() {
+      isBlank = true;
+    });
+
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        isBlank = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +99,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: Icon(Icons.sync, color: Colors.grey[700]), // Darker icon
             onPressed: () async {
-              context.read<SqlBloc>().add(SyncEmailsEvent(maxResults: 10));
+              _showBlankScreen();
             },
           ),
         //   IconButton(
@@ -94,7 +109,7 @@ class _HomePageState extends State<HomePage> {
         ],
         centerTitle: false,
       ),
-      body: Column(
+      body: isBlank ? Center(child: Text('Fetching Emails..'),) : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Tags Row
@@ -103,54 +118,44 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: tags.length,
+              itemCount: tags!.length,
               separatorBuilder: (context, index) => SizedBox(width: 8),
               itemBuilder: (context, index) {
                 final isSelected = selectedIndex == index;
                 return GestureDetector(
-                  onTap: () async {
-                    setState(() {
-                      isLoading = true;
-                      selectedIndex = index;
-                    });
-
-                    if (tags[index] == 'All') {
-                      setState(() {
-                        emails = widget.emails;
-                        isLoading = false;
-                      });
-                    } else {
-                      final tagEmails = await getTagMail(tags[index]);
-                      setState(() {
-                        emails = tagEmails;
-                        isLoading = false;
-                      });
-                    }
-                  },
                   // onTap: () async {
                   //   setState(() {
                   //     isLoading = true;
                   //     selectedIndex = index;
                   //   });
                   //
-                  //   try {
-                  //     String selectedTag = tags[index];
-                  //     final tagEmails = getEmailsByTag(widget.emails ,selectedTag);
+                  //   if (tags![index] == 'All') {
+                  //     setState(() {
+                  //       emails = widget.emails;
+                  //       isLoading = false;
+                  //     });
+                  //   } else {
+                  //     final tagEmails = await getTagMail(tags![index]);
                   //     setState(() {
                   //       emails = tagEmails;
-                  //     });
-                  //   } catch (e) {
-                  //     print("Error fetching tag emails: $e");
-                  //   } finally {
-                  //     setState(() {
                   //       isLoading = false;
                   //     });
                   //   }
                   // },
+                  onTap: () {
+                    final selectedTag = tags![index];
+                    final filtered = getEmailsByTag(widget.emails, selectedTag);
+
+                    setState(() {
+                      selectedIndex = index;
+                      emails = filtered;
+                    });
+                  },
+
 
                   child: Chip(
                     label: Text(
-                      tags[index],
+                      tags![index],
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -166,9 +171,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           SizedBox(height: 10),
-
-          isLoading ? Center(child: CircularProgressIndicator()) : SizedBox(height: 10),
-
             // Emails List
             Expanded(
               child: ListView.builder(

@@ -319,7 +319,7 @@ class SqlGmailTest extends StatelessWidget {
           child: CustomButton(
             onPressed: () async {
               BlocProvider.of<SqlBloc>(context)
-                  .add(SyncEmailsEvent(maxResults: 50));
+                  .add(SyncEmailsEvent(maxResults: 25));
 
               // List<Map<String,dynamic>> response = await getSQLData();
               //

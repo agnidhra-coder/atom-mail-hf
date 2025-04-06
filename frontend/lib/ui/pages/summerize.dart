@@ -42,7 +42,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
 
     print("email.threadid: ${email.threadId}");
-    print("email.name: ${name}");
+    print("email.tags: ${email.tags}");
     print("email.emailid: ${emailID}");
 
     getSummary(email.threadId).then((value) {
@@ -150,11 +150,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton.icon(
           onPressed: () {
+            // print(email.threadId);
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-              builder: (context) => AIReplyBottomSheet(),
+              builder: (context) => AIReplyBottomSheet(email),
             );
           },
           icon: Icon(Icons.auto_awesome),

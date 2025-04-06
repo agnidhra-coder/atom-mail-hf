@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../models/email_data.dart';
+import 'getSQLData.dart';
+
 class AIReplyBottomSheet extends StatefulWidget {
+  final EmailData email;
+
+  AIReplyBottomSheet(this.email);
+
   @override
   _AIReplyBottomSheetState createState() => _AIReplyBottomSheetState();
 }
@@ -9,10 +16,42 @@ class _AIReplyBottomSheetState extends State<AIReplyBottomSheet> {
   bool isGenerating = false;
   bool isGenerated = false;
   String generatedReply = "";
+  late EmailData email;
+
   TextEditingController promptController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    email = widget.email;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    onPressed:
+    () {
+      setState(() {
+        isGenerating = true;
+      });
+      // Simulate AI generation
+      Future.delayed(Duration(seconds: 2), () {
+        setState(() {
+          isGenerating = false;
+          isGenerated = true;
+          generatedReply = generatedReply;
+        });
+      });
+    };
+    style:
+    ElevatedButton.styleFrom(
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.blue[700],
+      padding: EdgeInsets.symmetric(vertical: 15),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      elevation: 0,
+    );
     return Container(
       padding: EdgeInsets.all(20),
       height: MediaQuery.of(context).size.height * 0.75,
@@ -60,7 +99,8 @@ class _AIReplyBottomSheetState extends State<AIReplyBottomSheet> {
                 TextField(
                   controller: promptController,
                   decoration: InputDecoration(
-                    hintText: "E.g., Thank them for the update and ask about next steps",
+                    hintText:
+                        "E.g., Thank them for the update and ask about next steps",
                     hintStyle: TextStyle(color: Colors.grey[500]),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -85,46 +125,55 @@ class _AIReplyBottomSheetState extends State<AIReplyBottomSheet> {
                 Container(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: isGenerating
+                        ? null
+                        : () async {
+                      if (promptController.text.trim().isEmpty) return;
                       setState(() {
                         isGenerating = true;
+                        isGenerated = false;
                       });
-                      // Simulate AI generation
-                      Future.delayed(Duration(seconds: 2), () {
+
+                      try {
+                        // print(email.threadId);
+                        String reply = await getResponse(promptController.text, email.threadId);
+                        setState(() {
+                          generatedReply = reply;
+                          isGenerated = true;
+                        });
+                      } catch (e) {
+                        // Optionally show error
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Failed to generate reply. Please try again."),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      } finally {
                         setState(() {
                           isGenerating = false;
-                          isGenerated = true;
-                          generatedReply =
-                          "Hi John,\n\nThank you for sharing these impressive Q2 results! A 15% revenue increase is definitely worth celebrating.\n\nI've reviewed the key highlights, and I'm particularly impressed by the 22% increase in customer acquisition. That's a significant achievement.\n\nI'll provide my complete feedback by Friday as requested. In the meantime, could you share any specific areas you'd like us to focus on for the board meeting presentation?\n\nBest regards,\n[Your Name]";
                         });
-                      });
+                      }
                     },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.blue[700],
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
                     child: isGenerating
                         ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Text("Generating...", style: TextStyle(color: Colors.white)),
-                      ],
-                    )
-                        : Text("Generate Reply", style: TextStyle(color: Colors.white)),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Text("Generating...",
+                                  style: TextStyle(color: Colors.black)),
+                            ],
+                          )
+                        : Text("Generate Reply",
+                            style: TextStyle(color: Colors.black)),
                   ),
                 ),
               ],
@@ -156,7 +205,8 @@ class _AIReplyBottomSheetState extends State<AIReplyBottomSheet> {
                       child: SingleChildScrollView(
                         child: Text(
                           generatedReply,
-                          style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.grey[800]),
                         ),
                       ),
                     ),
@@ -204,15 +254,20 @@ class _AIReplyBottomSheetState extends State<AIReplyBottomSheet> {
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
-                                    child: Text("Cancel", style: TextStyle(color: Colors.grey[700])),
+                                    child: Text("Cancel",
+                                        style:
+                                            TextStyle(color: Colors.grey[700])),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context); // Close dialog
-                                      Navigator.pop(context); // Close bottom sheet
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      Navigator.pop(
+                                          context); // Close bottom sheet
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
-                                          content: Text("Email sent successfully!"),
+                                          content:
+                                              Text("Email sent successfully!"),
                                           backgroundColor: Colors.blue[700],
                                         ),
                                       );
@@ -253,5 +308,3 @@ class _AIReplyBottomSheetState extends State<AIReplyBottomSheet> {
     );
   }
 }
-
-

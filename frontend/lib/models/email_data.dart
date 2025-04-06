@@ -7,6 +7,7 @@ class EmailData {
   final String to;
   final String? replyTo;
   final DateTime? date;
+  final List<dynamic>? tags;
 
   EmailData(
       this.to,
@@ -17,6 +18,7 @@ class EmailData {
         this.subject,
         required this.from,
         this.date,
+        this.tags
       });
 
   Map<String, dynamic> toJson() {
@@ -40,6 +42,7 @@ class EmailData {
     final content = json['content'] as String;
     final lines = content.split('\n');
     final thread_id = json['metadata']['thread_id'];
+    final tags = json['metadata']['tags'];
 
     String? subject;
     String? from;
@@ -75,6 +78,7 @@ class EmailData {
       subject: subject,
       from: from ?? '',
       date: dateStr != null ? DateTime.tryParse(dateStr) : null,
+      tags: tags
     );
   }
 }
