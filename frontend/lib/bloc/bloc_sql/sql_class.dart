@@ -62,9 +62,9 @@ class SqlManage {
   // }
 
   Future<void> _saveDocument(String id, String content, Map<String, dynamic> metadata, List<double> embedding) async {
-    final url = Uri.parse('https://full-moments-fold.loca.lt/email/upload');
+    final url = Uri.parse('https://chilly-jobs-peel.loca.lt/email/upload');
 
-    print(metadata.toString());
+    print(content.toString());
 
     final docData = {
       'content': content,
@@ -102,7 +102,7 @@ class SqlManage {
     } catch (e) {
       print("[ERROR] Failed to generate embedding: $e");
       // Return a default embedding in case of error
-      return List.filled(512, 0.0);
+      return List.filled(768, 0.0);
     }
   }
 

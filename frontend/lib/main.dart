@@ -34,16 +34,16 @@ class MyApp extends StatelessWidget {
           },
         ),
         BlocProvider(
-          create: (context) {
-            final gmailBloc = BlocProvider.of<GmailBloc>(context);
-            print('[DEBUG] MyApp: Creating SqlBloc with GmailBloc');
-            return SqlBloc(gmailBloc: gmailBloc)..add(InitializeSqlEvent());
-          },
-        )
+            // create: (context) => SqlBloc(gmailBloc: BlocProvider.of<GmailBloc>(context))
+            create: (context) {
+          final gmailBloc = BlocProvider.of<GmailBloc>(context);
+          print('[DEBUG] MyApp: Creating SqlBloc with GmailBloc');
+          return SqlBloc(gmailBloc: gmailBloc)..add(InitializeSqlEvent());
+        })
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: AppEntryPoint(),
+        home: SqlGmailTest(),
         // home: SqlGmailTest(),
       ),
     );
@@ -58,12 +58,12 @@ class AppEntryPoint extends StatelessWidget {
         BlocListener<GmailBloc, GmailState>(
           listener: (context, state) {
             if (state is GmailAlreadySignedIn) {
-            context.read<SqlBloc>().add(FetchSQLDataEvent());
-            }
-            else if (state is GmailSignedIn) {
+              context.read<SqlBloc>().add(FetchSQLDataEvent());
+            } else if (state is GmailSignedIn) {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => DetailsForm(user: state.user)),
+                MaterialPageRoute(
+                    builder: (_) => DetailsForm(user: state.user)),
               );
             }
           },
@@ -73,7 +73,8 @@ class AppEntryPoint extends StatelessWidget {
         builder: (context, gmailState) {
           if (gmailState is GmailLoading) {
             return const Scaffold(
-              body: Center(child: CircularProgressIndicator(color: Colors.black)),
+              body:
+                  Center(child: CircularProgressIndicator(color: Colors.black)),
             );
           } else if (gmailState is GmailEmailsFetched) {
             return HomePage(emails: gmailState.emails);
@@ -87,12 +88,10 @@ class AppEntryPoint extends StatelessWidget {
                 } else if (sqlState is SqlQueryComplete) {
                   List<EmailData> emails = [];
 
-                  for(var item in sqlState.results){
-
+                  for (var item in sqlState.results) {
                     final email = EmailData.fromJsonWithContent(
                       json: item,
-                      id: "null",
-                      threadId: "null",
+                      id: 'null',
                     );
 
                     emails.add(email);
@@ -113,6 +112,3 @@ class AppEntryPoint extends StatelessWidget {
     );
   }
 }
-
-
-

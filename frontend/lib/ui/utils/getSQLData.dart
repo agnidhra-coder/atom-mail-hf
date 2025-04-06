@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:atom_mail_hf/models/email_data.dart';
 import 'package:http/http.dart' as http;
 
-final _baseUrl = 'https://full-moments-fold.loca.lt/email/download';
+final _baseUrl = 'https://chilly-jobs-peel.loca.lt/email/download';
 
 Future<List<Map<String, dynamic>>> getSQLData() async {
   final url = Uri.parse(_baseUrl);
@@ -67,7 +67,6 @@ Future<List<EmailData>> getTagMail(String tag) async {
           final email = EmailData.fromJsonWithContent(
             json: item,
             id: "null",
-            threadId: "null",
           );
           filteredEmails.add(email);
         }
@@ -80,4 +79,27 @@ Future<List<EmailData>> getTagMail(String tag) async {
   }
 
   return filteredEmails;
+}
+
+Future<String> getSummary(String query) async{
+  final url = Uri.parse('https://4e6e-2409-40e4-52-ccce-448e-a831-66cf-2300.ngrok-free.app/summarize?thread_id=$query');
+  String summary = '';
+
+  try {
+    final response = await http.get(
+      url,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      summary = response.body;
+      print(' Success: ${response.body}');
+    } else {
+      print(' Failed with status: ${response.statusCode}');
+      // print('Response: ${response.body}');
+    }
+  } catch (e) {
+    print(' Exception caught: $e');
+  }
+
+  return summary;
 }

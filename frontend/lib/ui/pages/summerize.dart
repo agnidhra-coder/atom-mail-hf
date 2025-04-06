@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:atom_mail_hf/models/email_data.dart';
 
 import '../utils/AIReplyBottomSheet.dart';
+import '../utils/getSQLData.dart';
 import 'compose.dart';
 
 class SummarizeScreen extends StatefulWidget {
@@ -22,12 +23,14 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   late List<EmailData> emails;
   String name = '';
   String emailID = '';
+  String summary = 'Fetching Summary...';
 
   @override
   void initState() {
     super.initState();
     email = widget.email;
     emails = widget.emails;
+
 
     String rawEmail = email.from;
 
@@ -36,9 +39,17 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     if (match != null) {
       name = match.group(1)!.trim();
       emailID = match.group(2)!.trim();
-    } else {
-      print("Invalid format");
     }
+
+    print("email.threadid: ${email.threadId}");
+    print("email.name: ${name}");
+    print("email.emailid: ${emailID}");
+
+    getSummary(email.threadId).then((value) {
+      setState(() {
+        summary = value;
+      });
+    });
   }
 
   @override
@@ -87,7 +98,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "This email discusses key points related to the subject. AI-generated summaries will appear here.",
+                      summary,
                       style: TextStyle(fontSize: 14, color: Colors.grey[800]),
                     ),
                   ],
@@ -159,3 +170,4 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 }
+

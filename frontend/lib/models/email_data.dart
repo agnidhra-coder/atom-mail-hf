@@ -7,7 +7,6 @@ class EmailData {
   final String to;
   final String? replyTo;
   final DateTime? date;
-  final List<String> tags;
 
   EmailData(
       this.to,
@@ -18,20 +17,18 @@ class EmailData {
         this.subject,
         required this.from,
         this.date,
-        this.tags = const [], // default empty list
       });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'threadId': threadId,
-      'snippet': snippet.replaceAll(RegExp(r'[\n\r]+'), ' '),
+      'snippet': snippet.replaceAll(RegExp(r'[\n\r]+'), ' '), // Replace newline,
       'subject': subject,
       'from': from,
       'to': to,
       'replyTo': replyTo,
       'date': date?.toIso8601String(),
-      'tags': tags,
     };
   }
 
@@ -39,17 +36,17 @@ class EmailData {
   factory EmailData.fromJsonWithContent({
     required Map<String, dynamic> json,
     required String id,
-    required String threadId,
   }) {
     final content = json['content'] as String;
     final lines = content.split('\n');
+    final thread_id = json['metadata']['thread_id'];
 
     String? subject;
     String? from;
     String? to;
     String? dateStr;
     String? replyTo;
-    StringBuffer bodyBuffer = StringBuffer();
+    String body = '';
 
     for (var line in lines) {
       if (line.startsWith('Subject:')) {
@@ -63,9 +60,9 @@ class EmailData {
       } else if (line.startsWith('Reply-To:')) {
         replyTo = line.replaceFirst('Reply-To:', '').trim();
       } else if (line.startsWith('Body:')) {
-        bodyBuffer.write(line.replaceFirst('Body:', '').trim());
-      } else if (bodyBuffer.isNotEmpty) {
-        bodyBuffer.writeln(line);
+        body += line.replaceFirst('Body:', '').trim();
+      } else{
+        body += '\n' + line;
       }
     }
 
@@ -73,12 +70,11 @@ class EmailData {
       to ?? '',
       replyTo,
       id: id,
-      threadId: threadId,
-      snippet: bodyBuffer.toString().trim(),
+      threadId: thread_id,
+      snippet: body.trim(),
       subject: subject,
       from: from ?? '',
       date: dateStr != null ? DateTime.tryParse(dateStr) : null,
-      tags: (json['tags'] as List?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
 }

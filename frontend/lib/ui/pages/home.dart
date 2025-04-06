@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
     emails = widget.emails;
     fetchTags();
     // extractUniqueTags(widget.emails);
+    print("emails.length: ${emails.length}");
   }
 
   // void extractUniqueTags(List<EmailData> emailsList) {

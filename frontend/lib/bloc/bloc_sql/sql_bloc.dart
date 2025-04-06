@@ -217,9 +217,11 @@ Body:
 $body
 ''';
         String fromId = '';
+        String username = '';
         RegExp exp = RegExp(r'^(.*)<(.*)>$');
         Match? match = exp.firstMatch(from);
         if (match != null) {
+          username = match.group(1)!.trim();
           fromId = match.group(2)!.trim();
         } else {
           print("Invalid format");
