@@ -18,11 +18,14 @@ def summ():
     print(thread_id)
     return str(summary.generate(thread_id=thread_id))
 
-@app.route('/reply',methods=['GET'])
+@app.route('/reply',methods=['POST'])
 def replies():
-    thread_id = request.args.get('thread_id')
-    prompt = request.args.get('prompt')
-    
+    data = request.get_json()
+    print(data,"data")
+    thread_id = data.get('thread_id')
+    prompt = data.get('prompt')
+    print("thread_id",thread_id)
+    print('prompt',prompt)
     return str(aireply.generate(prompt,thread_id))
 
 if __name__ =="__main__":
