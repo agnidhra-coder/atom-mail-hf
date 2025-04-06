@@ -27,12 +27,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<GmailBloc>(
-          create: (context) => GmailBloc()..add(CheckLoginEvent()),
+        BlocProvider(
+          create: (context) {
+            print('[DEBUG] MyApp: Creating GmailBloc');
+            return GmailBloc()..add(CheckLoginEvent());
+          },
         ),
-        BlocProvider<SqlBloc>(
-          create: (context) => SqlBloc(gmailBloc: BlocProvider.of<GmailBloc>(context)),
-        ),
+        BlocProvider(
+          create: (context) {
+            final gmailBloc = BlocProvider.of<GmailBloc>(context);
+            print('[DEBUG] MyApp: Creating SqlBloc with GmailBloc');
+            return SqlBloc(gmailBloc: gmailBloc)..add(InitializeSqlEvent());
+          },
+        )
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

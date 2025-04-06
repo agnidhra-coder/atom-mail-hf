@@ -7,6 +7,7 @@ class EmailData {
   final String to;
   final String? replyTo;
   final DateTime? date;
+  final List<String> tags;
 
   EmailData(
       this.to,
@@ -17,18 +18,20 @@ class EmailData {
         this.subject,
         required this.from,
         this.date,
+        this.tags = const [], // default empty list
       });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'threadId': threadId,
-      'snippet': snippet.replaceAll(RegExp(r'[\n\r]+'), ' '), // Replace newline,
+      'snippet': snippet.replaceAll(RegExp(r'[\n\r]+'), ' '),
       'subject': subject,
       'from': from,
       'to': to,
       'replyTo': replyTo,
       'date': date?.toIso8601String(),
+      'tags': tags,
     };
   }
 
@@ -75,6 +78,7 @@ class EmailData {
       subject: subject,
       from: from ?? '',
       date: dateStr != null ? DateTime.tryParse(dateStr) : null,
+      tags: (json['tags'] as List?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
 }

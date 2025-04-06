@@ -38,6 +38,7 @@ class SqlBloc extends Bloc<SqlEvent, SqlState> {
       InitializeSqlEvent event, Emitter<SqlState> emit) async {
     emit(SqlLoading());
     try {
+      print('yrt block');
       await dotenv.load(fileName: ".env");
 
       // print("[CHROMA] Loading environment variables...");
@@ -94,6 +95,7 @@ Storage Information:
       print('[ERROR] Failed to initialize ChromaDB: $e');
       emit(SqlError("Failed to initialize ChromaDB: $e"));
     }
+    print('yrt block dvds');
   }
 
   Future<void> _syncEmails(

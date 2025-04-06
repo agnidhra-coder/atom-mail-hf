@@ -1,6 +1,8 @@
 // chroma_event.dart
 import 'package:equatable/equatable.dart';
 
+import '../../models/email_data.dart';
+
 abstract class SqlEvent extends Equatable {
   @override
   List get props => [];
