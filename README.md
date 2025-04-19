@@ -41,17 +41,16 @@ management system:
 
 ### 💻 App Interface
 
-<!-- <p align="center">
-  <img src="https://github.com/user-attachments/assets/sample1" width="340"/>
-  <img src="https://github.com/user-attachments/assets/sample2" width="340"/>
-</p>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/sample3" width="340"/>
-</p> -->
+  <img src="https://github.com/user-attachments/assets/00ccd8a7-1008-4d73-bf62-0a92859a10a8" width="340"/>
+  <img src="https://github.com/user-attachments/assets/f0101500-5a89-42af-ba5c-36ab1a2e3500" width="340"/>
+  <img src="https://github.com/user-attachments/assets/f0101500-5a89-42af-ba5c-36ab1a2e3500" width="340"/>
+  <img src="https://github.com/user-attachments/assets/c17a26a6-e395-46f7-9c90-9d0ceecf7f2f" width="340"/>
+</p>
 
 ### 🎥 App Demo
 
-<!-- [![Watch the video](https://github.com/user-attachments/assets/sample-video-thumbnail)](https://github.com/user-attachments/assets/sample-video) -->
+[![Watch the video](https://github.com/user-attachments/assets/8c8af518-d00e-4fa5-8a13-bc48fcbe01b6)](https://github.com/user-attachments/assets/8c8af518-d00e-4fa5-8a13-bc48fcbe01b6)
 
 ## Installation
 
@@ -138,13 +137,6 @@ user-friendly interface for managing emails. Key features include:
     email data grows.
 -   **AI Integration**: Maintaining accuracy and efficiency in email
     categorization and summarization.
-
-## Overcoming Strategies
-
--   **Caching**: Implement caching mechanisms to reduce API calls and improve
-    performance.
--   **Database Optimization**: Use indexing and query optimization techniques to
-    handle large datasets efficiently.
 
 ## Contributing
 
