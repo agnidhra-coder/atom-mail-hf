@@ -7,6 +7,15 @@ categorization, summarization, and reply generation. The app provides a seamless
 and efficient interface for managing emails, offering features like AI-powered
 email insights and prompt-based reply generation.
 
+---
+
+## Story Behind the Project
+
+This project was built during a 36-hour hackathon as part of the **GoFloww Atom Mail challenge**, where our team, **"Oops! It’s a Bug"**, secured **2nd Runner Up**. It was an intense journey filled with sleepless nights, debugging marathons, and chaotic energy, but it all came together in the end. For the full story, check out my [LinkedIn post](https://www.linkedin.com/posts/bishwa-thakur_hackfest2025-iitism-ai-activity-7317794090551541763-G_hX?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEXEAi4B14UghIb8VFblcA8zEoKpAmG-CzE)!
+
+
+---
+
 ## Table of Contents
 
 -   [Project Title](#atommail-hf)
