@@ -14,7 +14,7 @@ router.get('/download', async (req: Request, res: Response) => {
         FROM emails
       `;
       const metadataQuery = `
-        SELECT id, from_email, to_email, timestamp, tags, thread_id
+        SELECT id, from_email, to_email, timestamp, tags, thread_id, category, is_urgent
         FROM metadata
       `;
   
@@ -31,6 +31,8 @@ router.get('/download', async (req: Request, res: Response) => {
           timestamp: metadata.timestamp,
           tags: metadata.tags,
           thread_id: metadata.thread_id,
+          category: metadata.category ?? 'Updates',
+          is_urgent: metadata.is_urgent ?? false,
         };
       });
   
