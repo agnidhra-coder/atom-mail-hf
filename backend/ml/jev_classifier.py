@@ -21,7 +21,13 @@ def triage_email_with_jev(email_body):
         "questions": {
             "category": {
                 "type": "choice",
-                "instructions": "Determine the clean workspace bucket categorization for this email structure.",
+                "criteria": {
+                    "Work": "Work emails about jobs, projects, servers, tasks, meetings",
+                    "Personal": "Personal emails from friends, family, social",
+                    "Finance": "Finance emails about money, invoices, payments, banking",
+                    "Updates": "Updates, newsletters, notifications, system messages",
+                    "Spam": "Spam, promotions, unwanted marketing"
+                },
                 "options": ["Work", "Personal", "Finance", "Updates", "Spam"]
             },
             "urgency": {
@@ -38,9 +44,9 @@ def triage_email_with_jev(email_body):
             data = response.json()
             answers = data.get("answers", {})
             
-            choice_index = answers.get("category", {}).get("value", 3)
-            options = payload["questions"]["category"]["options"]
-            category = options[choice_index] if 0 <= choice_index < len(options) else "Updates"
+            category = answers.get("category", {}).get("choice", "Updates")
+            if category not in ["Work", "Personal", "Finance", "Updates", "Spam"]:
+                category = "Updates"
             
             is_urgent = answers.get("urgency", {}).get("noul", 0.0) >= 0.75
             
