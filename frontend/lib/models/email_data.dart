@@ -8,6 +8,8 @@ class EmailData {
   final String? replyTo;
   final DateTime? date;
   final List<dynamic>? tags;
+  final String? category;
+  final bool? isUrgent;
 
   EmailData(
       this.to,
@@ -18,8 +20,10 @@ class EmailData {
         this.subject,
         required this.from,
         this.date,
-        this.tags
-      });
+        this.tags,
+        this.category,
+        this.isUrgent,
+       });
 
   Map<String, dynamic> toJson() {
     return {
@@ -31,6 +35,8 @@ class EmailData {
       'to': to,
       'replyTo': replyTo,
       'date': date?.toIso8601String(),
+      'category': category,
+      'isUrgent': isUrgent,
     };
   }
 
@@ -43,6 +49,8 @@ class EmailData {
     final lines = content.split('\n');
     final thread_id = json['metadata']['thread_id'];
     final tags = json['metadata']['tags'];
+    final category = json['metadata']['category'] as String?;
+    final isUrgent = json['metadata']['is_urgent'] as bool?;
 
     String? subject;
     String? from;
@@ -78,7 +86,9 @@ class EmailData {
       subject: subject,
       from: from ?? '',
       date: dateStr != null ? DateTime.tryParse(dateStr) : null,
-      tags: tags
+      tags: tags,
+      category: category ?? 'Updates',
+      isUrgent: isUrgent ?? false,
     );
   }
 }

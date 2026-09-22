@@ -105,7 +105,16 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                 ),
               ),
 
-              // Email Subject
+              Wrap(
+                spacing: 8,
+                children: [
+                  if (email.category != null)
+                    Chip(label: Text(email.category!), backgroundColor: Colors.blue.shade50, side: BorderSide(color: Colors.blue.shade200)),
+                  if (email.isUrgent == true)
+                    Chip(label: Text('URGENT', style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.bold)), backgroundColor: Colors.red.shade50, side: BorderSide(color: Colors.red.shade200)),
+                ],
+              ),
+              SizedBox(height: 8),
               Text(
                 "${email.subject}",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.grey[800]),
