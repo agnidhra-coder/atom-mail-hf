@@ -40,15 +40,17 @@ def callApi():
         print("Something went wrong:", e)
 
 
-def sendTagsToDb(tag_from_model):
-    result = callApi()
+def updateMetadataInDb(updates, result):
     for i in range(len(result)):
-
         query = """
-            UPDATE metadata SET tags = %s
+            UPDATE metadata SET tags = %s, category = %s, is_urgent = %s
             WHERE thread_id = %s
         """
-        cur.execute(query, (tag_from_model[i], result[i]['metadata']['thread_id']))
+        tags = updates[i].get('tags', [])
+        category = updates[i].get('category', 'Updates')
+        is_urgent = updates[i].get('is_urgent', False)
+        thread_id = result[i]['metadata']['thread_id']
+        cur.execute(query, (tags, category, is_urgent, thread_id))
         conn.commit()
 
 def generate_few_shot_examples(user_emails):
@@ -98,29 +100,41 @@ def extract_tags(emails, user_emails):
     # Convert each comma-separated string to a list, stripping extra whitespace
     tag_lists = [ [tag.strip() for tag in match.split(',')] for match in matches ]
     return tag_lists
+from jev_classifier import triage_batch
+
 if __name__ == "__main__":
     a=time.time()
     res = callApi()
+    if not res:
+        exit(0)
     # print(res)
     content=[]
-    final_tags=[]
+    final_updates=[]
     p=env_vars["USER_TAGS"]
     i=0
     # print("len is: ",len(res))
     for j in range(len(res)):
-        doc=res[i]['content']
+        doc=res[j]['content']
         # print("doc is like ",doc)
         content.append(doc)
         # print(doc)
         i+=1
         if(i==6 or j==len(res)-1):
             tags = extract_tags(content, p)
-            i=0
-            final_tags.extend(tags)
+            jev_results = triage_batch(content)
             
+            for k in range(len(tags)):
+                final_updates.append({
+                    "tags": tags[k],
+                    "category": jev_results[k]["category"],
+                    "is_urgent": jev_results[k]["is_urgent"]
+                })
+                
+            i=0
             content=[]
-    # print(final_tags)
-    sendTagsToDb(final_tags)
+            
+    # print(final_updates)
+    updateMetadataInDb(final_updates, res)
     
     # embeddings = GoogleGenerativeAIEmbeddings(
     #             model="models/text-embedding-004"
